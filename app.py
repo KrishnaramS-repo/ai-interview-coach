@@ -26,7 +26,7 @@ import streamlit.components.v1 as components
 # CONFIGURATION SETTINGS
 # (Customizable in code: change interview, aptitude, and coding parameters here)
 # ==============================================================================
-TOTAL_INTERVIEW_QUESTIONS = 10  # Customizable in code
+TOTAL_INTERVIEW_QUESTIONS = 3  # Customizable in code
 APTITUDE_QUESTIONS_PER_ROUND = 3  # Questions per round (3 x 4 rounds = 12 total questions)
 CODING_PROBLEMS_COUNT = 2  # Total coding problems in technical coding round
 APTITUDE_SEC_PER_QUESTION = 90  # Recommended seconds per aptitude question (1.5 mins)
