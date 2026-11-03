@@ -26,7 +26,7 @@ import streamlit.components.v1 as components
 # CONFIGURATION SETTINGS
 # (Customizable in code: change interview, aptitude, and coding parameters here)
 # ==============================================================================
-TOTAL_INTERVIEW_QUESTIONS = 3  # Customizable in code
+TOTAL_INTERVIEW_QUESTIONS = 10  # Customizable in code
 APTITUDE_QUESTIONS_PER_ROUND = 3  # Questions per round (3 x 4 rounds = 12 total questions)
 CODING_PROBLEMS_COUNT = 2  # Total coding problems in technical coding round
 APTITUDE_SEC_PER_QUESTION = 90  # Recommended seconds per aptitude question (1.5 mins)
@@ -110,7 +110,7 @@ if "coding_status" not in st.session_state:
 if "coding_problems" not in st.session_state:
     st.session_state.coding_problems = None
 if "coding_language" not in st.session_state:
-    st.session_state.coding_language = "Python"
+    st.session_state.coding_language = "C"  # C programming available by default
 if "coding_submissions" not in st.session_state:
     st.session_state.coding_submissions = {"p1": "", "p2": ""}
 if "coding_final_report" not in st.session_state:
@@ -957,12 +957,13 @@ def compute_aptitude_score(rounds_data, user_answers):
 
 
 def generate_coding_problems(role, track, client, model_name):
-    """Generates 2 role-calibrated coding problems with starter templates."""
+    """Generates 2 role-calibrated coding problems with starter templates including C, C++, Python, Java, JS, and Go."""
     system_prompt = f"""
 Technical Interviewer creating 2 coding problems for {role} ({track} level).
 Problem 1: Core algorithmic/data structure problem (Array/String/Hash Map).
 Problem 2: Applied technical/system problem (Sliding Window/Tree/DP/Concurrency/Optimization).
 
+Support C, C++, Python, JavaScript, Java, and Go starter codes.
 Return JSON format:
 {{
   "problem_1": {{
@@ -973,10 +974,11 @@ Return JSON format:
     "example_1": {{"input": "...", "output": "...", "explanation": "..."}},
     "example_2": {{"input": "...", "output": "...", "explanation": "..."}},
     "starter_code": {{
+      "C": "#include <stdio.h>\\n#include <stdlib.h>\\n\\n// Complete the function\\nint* solve(int* nums, int numsSize, int target, int* returnSize) {{\\n    *returnSize = 0;\\n    return NULL;\\n}}",
+      "C++": "#include <vector>\\nusing namespace std;\\n\\nclass Solution {{\\npublic:\\n    vector<int> solve(vector<int>& nums, int target) {{\\n        return {{}};\\n    }}\\n}};",
       "Python": "def solve(nums, target):\\n    # Write your solution here\\n    pass",
       "JavaScript": "function solve(nums, target) {{\\n    // Write your solution here\\n}}",
       "Java": "public class Solution {{\\n    public int[] solve(int[] nums, int target) {{\\n        // Write code\\n        return new int[]{{}};\\n    }}\\n}}",
-      "C++": "#include <vector>\\nusing namespace std;\\n\\nclass Solution {{\\npublic:\\n    vector<int> solve(vector<int>& nums, int target) {{\\n        // Write code\\n        return {{}};\\n    }}\\n}};",
       "Go": "package main\\n\\nfunc solve(nums []int, target int) []int {{\\n    // Write code\\n    return nil\\n}}"
     }}
   }},
@@ -988,11 +990,12 @@ Return JSON format:
     "example_1": {{"input": "...", "output": "...", "explanation": "..."}},
     "example_2": {{"input": "...", "output": "...", "explanation": "..."}},
     "starter_code": {{
+      "C": "#include <stdio.h>\\n#include <string.h>\\n\\nint solveAdvanced(char* data) {{\\n    // Write your solution here\\n    return 0;\\n}}",
+      "C++": "#include <string>\\nusing namespace std;\\n\\nclass Solution {{\\npublic:\\n    int solveAdvanced(string data) {{\\n        return 0;\\n    }}\\n}};",
       "Python": "def solve_advanced(data):\\n    # Write your solution here\\n    pass",
       "JavaScript": "function solveAdvanced(data) {{\\n    // Write your solution here\\n}}",
-      "Java": "public class Solution {{\\n    public String solveAdvanced(String data) {{\\n        return \"\";\\n    }}\\n}}",
-      "C++": "#include <string>\\nusing namespace std;\\n\\nclass Solution {{\\npublic:\\n    string solveAdvanced(string data) {{\\n        return \"\";\\n    }}\\n}};",
-      "Go": "package main\\n\\nfunc solveAdvanced(data string) string {{\\n    return \"\"\\n}}"
+      "Java": "public class Solution {{\\n    public int solveAdvanced(String data) {{\\n        return 0;\\n    }}\\n}}",
+      "Go": "package main\\n\\nfunc solveAdvanced(data string) int {{\\n    return 0\\n}}"
     }}
   }}
 }}
@@ -1000,7 +1003,7 @@ Return JSON format:
     try:
         response = client.chat.completions.create(
             model=model_name,
-            messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": "Generate 2 coding problems JSON"}],
+            messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": "Generate 2 coding problems JSON supporting C and other languages"}],
             response_format={"type": "json_object"},
             temperature=0.6,
         )
@@ -1015,10 +1018,11 @@ Return JSON format:
                 "example_1": {"input": "nums = [1, 5, 3, 4, 2], k = 2", "output": "[0, 2]", "explanation": "|1 - 3| = 2"},
                 "example_2": {"input": "nums = [8, 12, 16], k = 4", "output": "[0, 1]", "explanation": "|8 - 12| = 4"},
                 "starter_code": {
+                    "C": "#include <stdio.h>\n#include <stdlib.h>\n\n/**\n * Note: The returned array must be malloced, assume caller calls free().\n */\nint* twoSumDiff(int* nums, int numsSize, int k, int* returnSize) {\n    *returnSize = 0;\n    // Write your C solution here\n    return NULL;\n}",
+                    "C++": "#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    vector<int> twoSumDiff(vector<int>& nums, int k) {\n        return {};\n    }\n};",
                     "Python": "def two_sum_diff(nums, k):\n    # Write your solution here\n    pass",
                     "JavaScript": "function twoSumDiff(nums, k) {\n    // Write your solution here\n}",
                     "Java": "public class Solution {\n    public int[] twoSumDiff(int[] nums, int k) {\n        return new int[]{};\n    }\n}",
-                    "C++": "#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    vector<int> twoSumDiff(vector<int>& nums, int k) {\n        return {};\n    }\n};",
                     "Go": "package main\n\nfunc twoSumDiff(nums []int, k int) []int {\n    return nil\n}"
                 }
             },
@@ -1030,10 +1034,11 @@ Return JSON format:
                 "example_1": {"input": "s = \"abcabcbb\"", "output": "3", "explanation": "The answer is \"abc\", length 3."},
                 "example_2": {"input": "s = \"pwwkew\"", "output": "3", "explanation": "The answer is \"wke\", length 3."},
                 "starter_code": {
+                    "C": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\nint lengthOfLongestSubstring(char* s) {\n    // Write your C solution here\n    return 0;\n}",
+                    "C++": "#include <string>\nusing namespace std;\n\nclass Solution {\npublic:\n    int lengthOfLongestSubstring(string s) {\n        return 0;\n    }\n};",
                     "Python": "def length_of_longest_substring(s):\n    # Write your solution here\n    pass",
                     "JavaScript": "function lengthOfLongestSubstring(s) {\n    // Write your solution here\n}",
                     "Java": "public class Solution {\n    public int lengthOfLongestSubstring(String s) {\n        return 0;\n    }\n}",
-                    "C++": "#include <string>\nusing namespace std;\n\nclass Solution {\npublic:\n    int lengthOfLongestSubstring(string s) {\n        return 0;\n    }\n};",
                     "Go": "package main\n\nfunc lengthOfLongestSubstring(s string) int {\n    return 0\n}"
                 }
             }
@@ -1045,6 +1050,7 @@ def evaluate_coding_solutions(problems, submissions, language, client, model_nam
     system_prompt = f"""
 You are a senior algorithmic engineering lead and technical coding interviewer.
 Evaluate the candidate's code for Problem 1 and Problem 2 written in {language}.
+If written in C, verify proper pointer arithmetic, memory management (malloc/free), array bounds, and syntax correctness.
 
 For each problem:
 - Score (0 to 50)
@@ -1189,9 +1195,9 @@ with st.sidebar:
 
     st.divider()
     st.markdown("### ⚙️ System Settings")
-    st.write(f"• **Interview Qs:** {TOTAL_INTERVIEW_QUESTIONS}")
+    st.write(f"• **Interview Qs:** {TOTAL_INTERVIEW_QUESTIONS} *(In Code)*")
     st.write(f"• **Aptitude Qs:** 4 Rounds ({APTITUDE_QUESTIONS_PER_ROUND} Qs/round)")
-    st.write(f"• **Coding Problems:** {CODING_PROBLEMS_COUNT} problems")
+    st.write(f"• **Coding Problems:** {CODING_PROBLEMS_COUNT} problems (C, C++, Python, Java...)")
 
     st.session_state.autoplay_voice = st.checkbox("🔊 Autoplay Voice", value=st.session_state.autoplay_voice)
 
@@ -1227,7 +1233,7 @@ if st.session_state.app_mode == "dashboard":
                 <p style="color: #15803D; font-size: 14px;"><b>Complete all 3 stages in sequence like an authentic company hiring process:</b></p>
                 <ol style="color: #166534; font-size: 14px; line-height: 1.8;">
                     <li><b>Round 1:</b> 4-Round Aptitude Assessment (with live timer)</li>
-                    <li><b>Round 2:</b> Technical Coding Assessment (2 problems in chosen language)</li>
+                    <li><b>Round 2:</b> Technical Coding Assessment (C, C++, Python, Java, JS, Go)</li>
                     <li><b>Round 3:</b> AI Voice Interview (Resume & role deep dive)</li>
                 </ol>
                 <p style="color: #166534; font-size: 13px;">Generates a <b>Unified Master Scorecard (PDF)</b> with an overall hiring recommendation.</p>
@@ -1253,7 +1259,7 @@ if st.session_state.app_mode == "dashboard":
                 <p style="color: #1D4ED8; font-size: 14px;"><b>Select and complete any single assessment module in isolation:</b></p>
                 <ul style="color: #1E40AF; font-size: 14px; line-height: 1.8;">
                     <li><b>🧠 Aptitude Round:</b> 4 rounds with per-question & total timers</li>
-                    <li><b>💻 Technical Coding Round:</b> 2 coding challenges in Python/JS/Java/C++</li>
+                    <li><b>💻 Technical Coding Round:</b> 2 coding challenges in C, C++, Python, etc.</li>
                     <li><b>🎙️ AI Voice Interview:</b> Spoken technical interview based on resume</li>
                     <li><b>🎯 Real-Time ATS Scanner:</b> Resume & job description compatibility</li>
                 </ul>
@@ -1495,7 +1501,7 @@ else:
 
 
     # --------------------------------------------------------------------------
-    # MODULE: 💻 TECHNICAL CODING ROUND (2 PROBLEMS)
+    # MODULE: 💻 TECHNICAL CODING ROUND (2 PROBLEMS WITH C, C++, PYTHON, ETC.)
     # --------------------------------------------------------------------------
     elif show_coding:
         st.title("💻 Technical Coding Assessment")
@@ -1506,8 +1512,8 @@ else:
                 f"""
                 #### Coding Round Overview:
                 - **Number of Problems:** {CODING_PROBLEMS_COUNT} problems calibrated for a **{st.session_state.candidate_track} {st.session_state.target_role}**.
-                - **Supported Languages:** Select your preferred language (Python, JavaScript, Java, C++, Go).
-                - **Automated Judge:** Evaluates functional correctness, test cases, time complexity (Big-O), space complexity, and clean code standards.
+                - **Supported Languages:** Select your preferred language: **C**, **C++**, **Python**, **Java**, **JavaScript**, **Go**.
+                - **Automated Judge:** Evaluates functional correctness, test cases, time complexity (Big-O), space complexity, memory management, and clean code standards.
                 """
             )
             if st.button("🚀 Start Coding Round", type="primary", use_container_width=True):
@@ -1527,17 +1533,34 @@ else:
             p1 = problems.get("problem_1", {})
             p2 = problems.get("problem_2", {})
 
-            col_lang, col_time = st.columns([2, 1])
+            col_lang, col_reset, col_time = st.columns([2, 1, 1])
             with col_lang:
-                st.session_state.coding_language = st.selectbox(
+                avail_languages = ["C", "C++", "Python", "Java", "JavaScript", "Go"]
+                curr_lang = st.session_state.coding_language if st.session_state.coding_language in avail_languages else "C"
+                selected_lang = st.selectbox(
                     "Choose Programming Language:",
-                    ["Python", "JavaScript", "Java", "C++", "Go"],
-                    index=["Python", "JavaScript", "Java", "C++", "Go"].index(st.session_state.coding_language),
+                    avail_languages,
+                    index=avail_languages.index(curr_lang),
+                    key="coding_lang_select_box",
                 )
-            with col_time:
-                st.info(f"Active Language: **{st.session_state.coding_language}**")
+                if selected_lang != st.session_state.coding_language:
+                    st.session_state.coding_language = selected_lang
+                    # Update starter templates for selected language if submissions are empty or matched template
+                    st.session_state.coding_submissions["p1"] = p1.get("starter_code", {}).get(selected_lang, "// Write solution here\n")
+                    st.session_state.coding_submissions["p2"] = p2.get("starter_code", {}).get(selected_lang, "// Write solution here\n")
+                    st.rerun()
 
             lang = st.session_state.coding_language
+
+            with col_reset:
+                if st.button(f"🔄 Reset to {lang} Boilerplate", use_container_width=True):
+                    st.session_state.coding_submissions["p1"] = p1.get("starter_code", {}).get(lang, f"// Write {lang} solution here\n")
+                    st.session_state.coding_submissions["p2"] = p2.get("starter_code", {}).get(lang, f"// Write {lang} solution here\n")
+                    st.rerun()
+
+            with col_time:
+                st.info(f"Active: **{lang}**")
+
             tab_p1, tab_p2 = st.tabs(["📝 Problem 1", "📝 Problem 2"])
 
             # --- PROBLEM 1 TAB ---
@@ -1557,15 +1580,15 @@ else:
                     st.markdown("**Example 2:**")
                     st.code(f"Input: {ex2.get('input')}\nOutput: {ex2.get('output')}\nExplanation: {ex2.get('explanation')}", language="text")
 
-                starter1 = p1.get("starter_code", {}).get(lang, "# Write code here\n")
+                starter1 = p1.get("starter_code", {}).get(lang, "// Write code here\n")
                 if not st.session_state.coding_submissions.get("p1"):
                     st.session_state.coding_submissions["p1"] = starter1
 
                 st.session_state.coding_submissions["p1"] = st.text_area(
                     f"Write your solution for Problem 1 ({lang}):",
                     value=st.session_state.coding_submissions["p1"],
-                    height=260,
-                    key="code_editor_p1",
+                    height=280,
+                    key=f"code_editor_p1_{lang}",
                 )
 
             # --- PROBLEM 2 TAB ---
@@ -1585,20 +1608,20 @@ else:
                     st.markdown("**Example 2:**")
                     st.code(f"Input: {ex2.get('input')}\nOutput: {ex2.get('output')}\nExplanation: {ex2.get('explanation')}", language="text")
 
-                starter2 = p2.get("starter_code", {}).get(lang, "# Write code here\n")
+                starter2 = p2.get("starter_code", {}).get(lang, "// Write code here\n")
                 if not st.session_state.coding_submissions.get("p2"):
                     st.session_state.coding_submissions["p2"] = starter2
 
                 st.session_state.coding_submissions["p2"] = st.text_area(
                     f"Write your solution for Problem 2 ({lang}):",
                     value=st.session_state.coding_submissions["p2"],
-                    height=260,
-                    key="code_editor_p2",
+                    height=280,
+                    key=f"code_editor_p2_{lang}",
                 )
 
             st.divider()
             if st.button("🚀 Submit Solutions for Automated Code Review & Scoring", type="primary", use_container_width=True):
-                with st.spinner("Automated judge is executing test cases and evaluating time/space complexity..."):
+                with st.spinner(f"Automated judge is compiling and evaluating {lang} solutions, test cases, and time/space complexity..."):
                     eval_res = evaluate_coding_solutions(
                         problems=st.session_state.coding_problems,
                         submissions=st.session_state.coding_submissions,
